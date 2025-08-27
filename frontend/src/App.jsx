@@ -37,7 +37,9 @@ function App() {
     setIsLoading(true);
     setAnalysisResult(null);
     window.speechSynthesis.cancel(); // Stop any speech on new analysis
-    const promise = axios.post('http://127.0.0.1:8000/debug', { code: inputCode });
+    
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+const promise = axios.post(`${apiUrl}/debug`, { code: inputCode });
 
     toast.promise(promise, {
       loading: 'Helper is thinking...',
