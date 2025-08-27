@@ -17,7 +17,7 @@ app = FastAPI()
 origins = [
     "http://localhost:5173",
     "http://localhost:3000",
-    "https://code-debugger-py-xyz.vercel.app",
+    "https://code-debugger-py.vercel.app/",
 ]
 app.add_middleware(
     CORSMiddleware,
