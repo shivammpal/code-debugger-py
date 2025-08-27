@@ -4,12 +4,6 @@ PyHelper is your mini AI co-pilot for debugging Python code. Just paste your bug
 
 Think of it as your personal Python tutor that not only fixes issues but also teaches you what went wrong.
 
-🔥 Live Demo & Preview
-
-➡️ Try PyHelper Live
- <!-- Replace this with your actual link -->
-
-<!-- Add a screenshot of your app here for better presentation -->
 ✨ Features
 
 Smart Error Detection → Powered by Google Gemini LLM, it can spot both syntax and logical errors.
@@ -19,8 +13,6 @@ Beginner-Friendly Explanations → Errors are explained in plain English so anyo
 One-Click Fixes → Instantly get the corrected version of your code.
 
 Text-to-Speech Support → Let PyHelper read out the explanation for you.
-
-Hinglish Mode → Toggle explanations in Hinglish for fun and relatability.
 
 Modern UI → Sleek, dark-themed interface with smooth animations and responsive design.
 
@@ -51,8 +43,8 @@ Python
 A Google Gemini API Key
 
 1️⃣ Clone the Repository
-git clone https://github.com/shivammpal/git1.git
-cd git1
+git clone https://github.com/shivammpal/code-debugger-py.git
+cd code-debugger-py
 
 2️⃣ Backend Setup
 cd backend
@@ -100,3 +92,4 @@ Backend: Deploy on Render
 👨‍💻 Author
 
 Built with ❤️ by Shivam
+
