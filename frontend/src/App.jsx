@@ -188,7 +188,7 @@ const promise = axios.post(`${apiUrl}/debug`, { code: inputCode });
             )}
             {!analysisResult && !isLoading && (
               <div className="flex items-center justify-center h-full text-gray-400 text-lg">
-                <p>Your AI-powered analysis will appear here.</p>
+                <p>Your AI-powered analysis will appear here. by shivam pal</p>
               </div>
             )}
           </div>
