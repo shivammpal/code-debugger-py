@@ -1,3 +1,4 @@
+// Import necessary libraries and components for the application.
 import React, { useState } from 'react';
 import Editor from 'react-simple-code-editor';
 import { highlight, languages } from 'prismjs/components/prism-core';
@@ -7,12 +8,12 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import toast, { Toaster } from 'react-hot-toast';
 
-// --- ICONS ---
+// --- Icon Components ---
 const CopyIcon = () => (<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>);
 const GithubIcon = () => (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>);
 const SpeakerIcon = () => (<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>);
 
-
+// --- Sample Code ---
 const sampleCode = `def fibonacci(n):
     if n <= 0:
         return "Incorrect input"
@@ -27,19 +28,22 @@ const sampleCode = `def fibonacci(n):
 print(fibonacci("5"))
 `;
 
+// --- Main App Component ---
 function App() {
+  // --- State Management ---
   const [inputCode, setInputCode] = useState(sampleCode);
   const [analysisResult, setAnalysisResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false); // State for speaker button
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
+  // --- Event Handlers ---
   const handleDebug = async () => {
     setIsLoading(true);
     setAnalysisResult(null);
-    window.speechSynthesis.cancel(); // Stop any speech on new analysis
-    
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
-const promise = axios.post(`${apiUrl}/debug`, { code: inputCode });
+    window.speechSynthesis.cancel();
+
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';// 
+    const promise = axios.post(`${apiUrl}/debug`, { code: inputCode });
 
     toast.promise(promise, {
       loading: 'Helper is thinking...',
@@ -66,6 +70,7 @@ const promise = axios.post(`${apiUrl}/debug`, { code: inputCode });
     }
   };
 
+  // Function to copy the corrected code to the clipboard.
   const handleCopy = () => {
     if (analysisResult && analysisResult.corrected_code) {
       navigator.clipboard.writeText(analysisResult.corrected_code);
@@ -73,14 +78,13 @@ const promise = axios.post(`${apiUrl}/debug`, { code: inputCode });
     }
   };
 
-  // --- NEW FUNCTION FOR TEXT-TO-SPEECH ---
+  // Function to handle text-to-speech for the explanation.
   const handleSpeak = () => {
     if (isSpeaking || !analysisResult?.explanation) return;
 
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(analysisResult.explanation);
 
-    // Add event listeners to manage the speaking state
     utterance.onstart = () => setIsSpeaking(true);
     utterance.onend = () => setIsSpeaking(false);
     utterance.onerror = () => setIsSpeaking(false);
@@ -88,6 +92,7 @@ const promise = axios.post(`${apiUrl}/debug`, { code: inputCode });
     window.speechSynthesis.speak(utterance);
   };
 
+  // --- JSX Rendering ---
   return (
     <div className="aurora-background min-h-screen text-gray-100 flex flex-col items-center p-4 md:p-6 font-sans">
       <Toaster position="top-center" toastOptions={{

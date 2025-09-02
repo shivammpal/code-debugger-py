@@ -1,15 +1,16 @@
+/* --- Tailwind CSS Directives --- */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* --- Body Styling --- */
 body {
-  /* Base dark theme + scrolling */
   background-color: #0d1117;
   color: #e6edf3;
   overflow-y: auto;
 }
 
-/* Shared code editor style */
+/* --- Shared Code Editor Styling --- */
 .editor-shared {
   font-family: 'Fira Code', 'Courier New', monospace !important;
   font-size: 15px !important;
@@ -19,5 +20,5 @@ body {
   outline: none !important;
   box-shadow: none !important;
   background: transparent !important;
-  color: #e6edf3 !important; /* Light text for dark background */
+  color: #e6edf3 !important;
 }

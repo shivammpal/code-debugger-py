@@ -1,3 +1,4 @@
+# Import necessary libraries and modules for the FastAPI application.
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import os
@@ -7,17 +8,17 @@ import google.generativeai as genai
 from google.generativeai.types import HarmCategory, HarmBlockThreshold
 from fastapi.middleware.cors import CORSMiddleware
 
-# --- Load environment variables ---
+# --- Environment Variable Loading ---
 load_dotenv()
 
-# --- App Initialization ---
+# --- FastAPI App Initialization ---
 app = FastAPI()
 
-# --- CORS (Cross-Origin Resource Sharing) Configuration ---
+# --- CORS Middleware Configuration ---
 origins = [
     "http://localhost:5173",
     "http://localhost:3000",
-    "https://code-debugger-py.vercel.app"  # No trailing slash
+    "https://code-debugger-py.vercel.app"
 ]
 app.add_middleware(
     CORSMiddleware,
@@ -27,36 +28,34 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --- Google AI Client Configuration ---
+# --- Google AI Client Setup ---
 google_api_key = os.getenv("GOOGLE_API_KEY")
 if not google_api_key:
-    raise ValueError("❌ GOOGLE_API_KEY not found in environment variables.")
+    raise ValueError("GOOGLE_API_KEY not found in environment variables.")
 genai.configure(api_key=google_api_key)
 
-
-# --- UPDATED Pydantic Model ---
+# --- Pydantic Model Definition ---
 class CodeInput(BaseModel):
     code: str
-    translate: bool = False # New field to request translation
-
+    translate: bool = False
 
 # --- Root Endpoint ---
 @app.get("/")
 def read_root():
-    return {"message": "✅ PySleuth AI Debugger Backend is Running!"}
+    return {"message": "PySleuth AI Debugger Backend is Running!"}
 
-
-# --- UPDATED Debugging Endpoint ---
+# --- Code Debugging Endpoint ---
 @app.post("/debug")
 async def debug_code(data: CodeInput):
     user_code = data.code
     
-    # Conditionally add the translation instruction
+    # --- Dynamic Prompt Generation ---
     translation_instruction = ""
     if data.translate:
         translation_instruction = "IMPORTANT: Translate the 'explanation' field into Hinglish (a mix of Hindi and English)."
 
-    prompt = f"""
+    # --- Prompt Template ---
+    prompt = f'''
     You are an expert Python code debugger named 'PySleuth'. 
     Your task is to analyze the following Python code for errors. 
     Please return your response ONLY in valid JSON with exactly three keys:
@@ -70,7 +69,9 @@ async def debug_code(data: CodeInput):
     ```python
     {user_code}
     ```
-    """
+    '''
+    
+    # --- Safety Settings for AI Model ---
     safety_settings = {
         HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
         HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
@@ -79,15 +80,17 @@ async def debug_code(data: CodeInput):
     }
 
     try:
+        # --- AI Model Interaction ---
         model = genai.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content(prompt, safety_settings=safety_settings)
 
+        # --- Response Validation ---
         if not (response.candidates and response.candidates[0].content.parts):
             raise ValueError("No valid text response from Gemini.")
         
         result_text = response.candidates[0].content.parts[0].text
         
-        # Manually clean the string to remove markdown fences before parsing.
+        # --- Response Cleaning ---
         cleaned_text = result_text.strip()
         if cleaned_text.startswith("```json"):
             cleaned_text = cleaned_text[7:-3].strip()
@@ -95,10 +98,11 @@ async def debug_code(data: CodeInput):
             cleaned_text = cleaned_text[3:-3].strip()
 
         try:
-            # Attempt to parse the cleaned text
+            # --- JSON Parsing and Response ---
             return json.loads(cleaned_text)
         except json.JSONDecodeError:
-            print(f"⚠️ AI returned non-JSON despite cleaning. Raw output: {cleaned_text}")
+            # --- Fallback for JSON Parsing Errors ---
+            print(f"AI returned non-JSON despite cleaning. Raw output: {cleaned_text}")
             return {
                 "has_errors": True,
                 "explanation": "AI returned a response that could not be parsed as JSON, even after cleaning.",
@@ -106,5 +110,6 @@ async def debug_code(data: CodeInput):
             }
 
     except Exception as e:
-        print(f"🔥 An error occurred: {e}")
+        # --- General Error Handling ---
+        print(f"An error occurred: {e}")
         raise HTTPException(status_code=500, detail=str(e))
